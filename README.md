@@ -26,3 +26,44 @@ if you get an error saying that it can't find ``` Python.h ```export these env v
 [uppsala osm](https://export.hotosm.org/en/v3/exports/5c3878b4-273b-4c52-a9d5-0f17c3fdbef3) exported on demand from hotosm.org
 
 
+
+# 4 jan 
+
+i played with folium and i learned how to dynamically change the tiles selecting it from the html
+
+
+## query overpass api with python 
+after several trials the i finally used overpass api using python to get all the bus stops and lines of uppsala using the overpass library  
+
+```
+query = '''
+(
+  node["highway"="bus_stop"](59.781,17.561,59.901,17.717);
+  way["highway"="bus_route"](59.781,17.561,59.901,17.717);
+  relation["route"="bus"](59.781,17.561,59.901,17.717);
+);
+'''
+
+api = overpass.API()
+response = api.get(query)
+
+```
+then i saved the output file to a osm file
+
+## osm2pgsql
+the task now is to import the osm file to a postgres database, i used [osm2pgsql](https://osm2pgsql.org/doc/manual.html) to do that
+
+- install postgres.app
+- install pg4 admin 
+- install osm2pgsql
+- create a database in pg4admin
+- create extension postgis and hstore in the database
+
+- import the osm file to the database
+```
+osm2pgsql busstops.osm -database geospatial
+
+```
+
+
+

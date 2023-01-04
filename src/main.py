@@ -9,7 +9,10 @@ warnings.filterwarnings("ignore", category=ShapelyDeprecationWarning)
 import overpy 
 import folium
 import requests
-# %% get data 
+import overpass
+import osm2geojson
+
+# %% set up
 
 '''this give you all the osm data for of all sweden, too big for our purposes'''
 
@@ -18,28 +21,13 @@ import requests
 # open('sweden.pbf', 'wb').write(pdb_file.content)
 # osm_path = "/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/sweden.pbf"
 
-#%%
 #uppsala_geojson_path = "/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsalaGeoJSON/df.geojson"
 
 uppsala_osm_path = '/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsala_pbf.osm.pbf'
 loc_path = "/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/Tatorter_1980_2018.gpkg"
 
 
-query = '''
 
-    (
-    // query part for: “route=bus” and “ref=4”
-    
-    node["route"="bus"]["ref"="4"](17.561588703356144, 59.78191521597861, 17.717941431819803, 59.90140795000792);
-    way["route"="bus"]["ref"="4"](17.561588703356144, 59.78191521597861, 17.717941431819803, 59.90140795000792);
-    relation["route"="bus"]["ref"="4"](17.561588703356144, 59.78191521597861, 17.717941431819803, 59.90140795000792);
-    
-
-    );
-
-    out center;
-
-'''
 
 # %% 
 '''openstreetmap data'''
@@ -52,35 +40,42 @@ uppsala_limit = border[border.TATORT == 'Uppsala']
 bbox_uppsala = tuple(uppsala_limit.to_crs(epsg=4326).total_bounds)
 
 
+#%%
+'''overpass api'''
+
+query = '''
+
+(
+  node["highway"="bus_stop"](59.781,17.561,59.901,17.717);
+  way["highway"="bus_route"](59.781,17.561,59.901,17.717);
+  relation["route"="bus"](59.781,17.561,59.901,17.717);
+);
+
+'''
+# query osm 
+api = overpass.API()
+result = api.get(query,  responseformat="xml")
+
+
+
+# to geojson
+
 # %%
 # read geopkg
 
 
-#%%
+#%% plot buildings and uppsala border
 ax = uppsala_limit.to_crs(epsg=4326).plot(color='white', edgecolor='black')
 buildings.plot(ax=ax, color='red')
 buildings[buildings['name'] == 'Ångströmlaboratoriet'].plot(ax=ax, color='blue')
 
-webmap = building.explore()
+webmap = buildings.explore()
 
 ax.set_ylim(59.83, 59.9)
 ax.set_xlim(17.6, 17.7)
 
 
 # %%
-#set figsize 
-
-
-#osm get public transport
-
-
-# plot amenities 
-
-
-#use folium to plot this data 
-
-# create a story about two dragons
-story = ''
 
 
 
@@ -89,4 +84,6 @@ story = ''
 geoupp = gpd.read_file(uppsala_geojson_path)
 
 
+
 # %%
+

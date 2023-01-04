@@ -69,5 +69,7 @@ osm2pgsql data/uppsala.osm -d geospatial
 
 ```
 
+## 5 jan 
+
 
 

@@ -3,10 +3,8 @@ import psycopg2
 import dotenv 
 import os
 from shapely import wkb
+
 dotenv.load_dotenv()
-
-
-
 
 
 class Database:
@@ -64,31 +62,6 @@ class Database:
     def close(self):
         self._conn.close()
     
-
-
-# %%
-# 
-query = "select ref,  ST_AsBinary(way) from planet_osm_line where route = 'bus' "
-
-db = Database()
-results = db.query(query)
-
-route = {}
-
-for res in results:
-    if res[0] == '4':
-        route[res[0]] = wkb.loads(res[1].hex(), hex=True).wkt
-
-# %%
-
-# %%
-
-geometry = loads(route['4'])
-
-# create a geodataframe 
-gdf = gpd.GeoDataFrame({'geometry': geometry}, index=[0], crs="EPSG:4326")
-
-# unserstand how to get the right projection 
 
 
 # %%

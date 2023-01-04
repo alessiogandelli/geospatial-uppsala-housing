@@ -69,7 +69,7 @@ ax = uppsala_limit.to_crs(epsg=4326).plot(color='white', edgecolor='black')
 buildings.plot(ax=ax, color='red')
 buildings[buildings['name'] == 'Ångströmlaboratoriet'].plot(ax=ax, color='blue')
 
-webmap = buildings.explore()
+#webmap = buildings.explore()
 
 ax.set_ylim(59.83, 59.9)
 ax.set_xlim(17.6, 17.7)

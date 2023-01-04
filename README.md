@@ -50,6 +50,10 @@ response = api.get(query)
 ```
 then i saved the output file to a osm file
 
+## extract osm data from a big area 
+is better to use https://extract.bbbike.org/ insted of overpass so you can get all the osm information for a specific area 
+
+
 ## osm2pgsql
 the task now is to import the osm file to a postgres database, i used [osm2pgsql](https://osm2pgsql.org/doc/manual.html) to do that
 
@@ -61,7 +65,7 @@ the task now is to import the osm file to a postgres database, i used [osm2pgsql
 
 - import the osm file to the database
 ```
-osm2pgsql busstops.osm -database geospatial
+osm2pgsql data/uppsala.osm -d geospatial
 
 ```
 

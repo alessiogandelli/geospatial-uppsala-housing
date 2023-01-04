@@ -2,7 +2,9 @@
 import psycopg2
 import dotenv 
 import os
+from shapely.wkt import loads
 from shapely import wkb
+import geopandas as gpd
 
 dotenv.load_dotenv()
 
@@ -26,7 +28,14 @@ class Database:
         for result in results:
             stops[result[0]] = wkb.loads(result[1].hex(), hex=True).wkt # translate binary to shapely geometry
 
-        return stops
+        # geodataframe of bus stops loading the geometry from the wkt and setting the crs to EPSG:900913
+        gdf_stops = gpd.GeoDataFrame.from_dict(stops, orient='index', columns=['geometry'])
+        gdf_stops['geometry'] = gdf_stops['geometry'].apply(loads)# load the geometry from the wkt
+        gdf_stops.crs = "EPSG:900913" # set crs to EPSG:900913
+        gdf_stops = gdf_stops.reset_index().rename(columns={'index':'name'}).to_crs("EPSG:4326")# reset index and rename column
+
+
+        return gdf_stops
     
     def get_bus_routes(self):
         query = "select ref,  ST_AsBinary(way) from planet_osm_line where route = 'bus'"
@@ -39,7 +48,15 @@ class Database:
 
             routes[res[0]] = wkb.loads(res[1].hex(), hex=True).wkt # translate binary to shapely geometry
                 
-        return routes
+
+
+        gdf_routes = gpd.GeoDataFrame.from_dict(routes, orient='index', columns=['geometry'])
+        gdf_routes['geometry'] = gdf_routes['geometry'].apply(loads)# load the geometry from the wkt
+        gdf_routes.crs = "EPSG:900913"# set crs to EPSG:900913
+        gdf_routes = gdf_routes.reset_index().rename(columns={'index':'ref'}).to_crs("EPSG:4326")# reset index and rename column 
+        gdf_routes = gdf_routes[~gdf_routes['ref'].str.contains('[a-zA-Z]')].astype({'ref': 'int32'}).query('ref < 34') # remove values in ref that contains character 
+
+        return gdf_routes
 
 
     def query(self, query):

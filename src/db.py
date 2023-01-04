@@ -58,6 +58,24 @@ class Database:
 
         return gdf_routes
 
+    def get_supermarkets(self):
+        query = "SELECT name, ST_AsBinary(way) FROM planet_osm_point WHERE shop='supermarket'"
+        self._cursor.execute(query)
+        results = self._cursor.fetchall()
+
+        supermarket = {}
+
+        for result in results:
+            supermarket[result[0]] = wkb.loads(result[1].hex(), hex=True).wkt # translate binary to shapely geometry
+
+        # geodataframe of bus stops loading the geometry from the wkt and setting the crs to EPSG:900913
+        gdf = gpd.GeoDataFrame.from_dict(supermarket, orient='index', columns=['geometry'])
+        gdf['geometry'] = gdf['geometry'].apply(loads)# load the geometry from the wkt
+        gdf.crs = "EPSG:900913" # set crs to EPSG:900913
+        gdf = gdf.reset_index().rename(columns={'index':'name'}).to_crs("EPSG:4326")# reset index and rename column
+
+        return gdf
+
 
     def query(self, query):
         try:

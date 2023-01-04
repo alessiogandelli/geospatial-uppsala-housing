@@ -71,5 +71,5 @@ osm2pgsql data/uppsala.osm -d geospatial
 
 ## 5 jan 
 
-
+https://epsg.io/900913 the right projection for the osm data i imported in postgresql
 

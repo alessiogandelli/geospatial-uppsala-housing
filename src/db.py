@@ -29,15 +29,17 @@ class Database:
         return stops
     
     def get_bus_routes(self):
-        query = "select ref,  ST_AsBinary(way) from planet_osm_line where route = 'bus' limit 100"
+        query = "select ref,  ST_AsBinary(way) from planet_osm_line where route = 'bus'"
         self._cursor.execute(query)
         results = self._cursor.fetchall()
 
         routes = {}
 
-        for result in results:
-            print(result)
-        
+        for res in results:
+
+            routes[res[0]] = wkb.loads(res[1].hex(), hex=True).wkt # translate binary to shapely geometry
+                
+        return routes
 
 
     def query(self, query):

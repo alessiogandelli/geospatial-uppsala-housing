@@ -12,7 +12,7 @@ import requests
 import overpass
 import osm2geojson
 
-# %% set up
+# set up
 
 '''this give you all the osm data for of all sweden, too big for our purposes'''
 
@@ -32,7 +32,7 @@ loc_path = "/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/Tator
 # %% 
 '''openstreetmap data'''
 osm = pyrosm.OSM(uppsala_osm_path)
-buildings = osm.get_buildings()
+#buildings = osm.get_buildings()
 
 '''geopackage  data'''
 border = gpd.read_file(loc_path)

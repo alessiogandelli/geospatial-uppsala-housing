@@ -73,3 +73,9 @@ osm2pgsql data/uppsala.osm -d geospatial
 
 https://epsg.io/900913 the right projection for the osm data i imported in postgresql
 
+bus routes and stops on the folium map from postgres 
+
+
+## 6 jan
+
+the goal of today is to plot supermarkets and to intert the home 

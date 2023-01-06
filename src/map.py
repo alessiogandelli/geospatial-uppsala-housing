@@ -18,8 +18,14 @@ routes = db.get_bus_routes()
 stops = db.get_bus_stops()
 supermarkets = db.get_supermarkets()
 
-query = "select ref,  ST_AsBinary(way) from planet_osm_line where route = 'bike'"
-bike = db.query(query)
+
+save_path = '/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsalaGeoJSON/'
+routes.to_file(save_path + 'routes.geojson', driver='GeoJSON')
+stops.to_file(save_path + 'stops.geojson', driver='GeoJSON')
+supermarkets.to_file(save_path + 'supermarkets.geojson', driver='GeoJSON')
+
+
+
 #%%
 '''BUS ROUTES'''
 
@@ -104,13 +110,6 @@ folium.Marker(location=latlng, popup=loc.address, icon = folium.Icon(color = 'bl
 home = folium.Marker(location=[59.8586, 17.6389], popup='home', draggable = True ,icon = folium.Icon(icon = 'home')).add_to(m)
 
 
-# Define the callback function
-def on_dragend(event):
-    lat, lng = event.latlng
-    print(f'Marker dragged to: ({lat}, {lng})')
-
-# Bind the callback function to the dragend event
-home.add_event('dragend', on_dragend)
 
 
 '''BUS ROUTES'''
@@ -133,6 +132,8 @@ for _, row in supermarkets.iterrows():
 
 
 
+marker_cluster = ClickForMarker()
+marker_cluster.add_to(m)
 
 
 bus_group.add_to(m)
@@ -142,8 +143,7 @@ supermarkets_group.add_to(m)
 
 folium.LayerControl().add_to(m)
 
-m
-# %%
+m# %%
 
 # compute distance from marker home to closest supermarket
 
@@ -159,3 +159,5 @@ nearest[0].distance(nearest[1])
 
 
 
+
+# %%

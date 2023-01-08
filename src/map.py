@@ -161,3 +161,6 @@ nearest[0].distance(nearest[1])
 
 
 # %%
+import osmnx  as ox
+G = ox.graph_from_point( center_point=(59.8586, 17.6389),dist=1000, network_type='drive')
+# %%

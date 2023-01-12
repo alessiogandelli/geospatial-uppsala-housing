@@ -75,6 +75,6 @@ https://epsg.io/900913 the right projection for the osm data i imported in postg
 bus routes and stops on the folium map from postgres 
 
 ## network 
-first i got the graph with graph from point then i saved it into a file because i need speed
+- saved to a graphml file for working later without needing to request it again and again, graphml is the best according to [here](https://github.com/gboeing/osmnx-examples/blob/cc2308ce7deb30fda4a24e8f8eec7906bbc631e3/notebooks/05-save-load-networks.ipynb)
 
 

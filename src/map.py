@@ -1,5 +1,6 @@
 #%%
 from shapely.wkt import loads
+os.environ['USE_PYGEOS'] = '0'
 import geopandas as gpd
 from db import Database
 import folium
@@ -161,6 +162,40 @@ nearest[0].distance(nearest[1])
 
 
 # %%
+
+# %%
+
+
+# %%
+
+
+import datetime
+# %%
 import osmnx  as ox
-G = ox.graph_from_point( center_point=(59.8586, 17.6389),dist=1000, network_type='drive')
+G = ox.graph_from_point( center_point=(59.8586, 17.6389), dist=8000, network_type='walk')
+
+G = ox.speed.add_edge_speeds(G)
+G = ox.speed.add_edge_travel_times(G)
+
+#
+orig = ox.distance.nearest_nodes(G, Y=59.8586, X=17.6389)
+dest = ox.distance.nearest_nodes(G, Y=59.839815, X=17.646617)
+
+route = ox.shortest_path(G, orig, dest, weight="travel_time")
+
+travel_speed = 5 
+trip_times = [5, 10, 15, 20, 25] 
+
+edge_lengths = ox.utils_graph.get_route_edge_attributes(G, route, "length")
+print( 'length:', round(sum(edge_lengths)))
+
+edge_lengths = ox.utils_graph.get_route_edge_attributes(G, route, "travel_time")
+print(str(datetime.timedelta(seconds=sum(edge_lengths))))
+
+# %%
+iso_colors = ox.plot.get_colors(n=len(trip_times), cmap="plasma", start=0, return_hex=True)
+
+
+# color the nodes according to isochrone then plot the street network
+
 # %%

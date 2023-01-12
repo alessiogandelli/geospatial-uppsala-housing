@@ -199,3 +199,53 @@ iso_colors = ox.plot.get_colors(n=len(trip_times), cmap="plasma", start=0, retur
 # color the nodes according to isochrone then plot the street network
 
 # %%
+
+trip_times = [3, 6, 9, 15]  
+travel_speed = 5
+network_type = "walk"
+uni = ox.distance.nearest_nodes(G, Y=59.839815, X=17.646617)
+
+G_proj = ox.project_graph(G)
+
+meters_per_minute = travel_speed * 1000 / 60  # km per hour to m per minute
+for _, _, _, data in G_proj.edges(data=True, keys=True):
+    data["time"] = data["length"] / meters_per_minute
+
+isochrone_polys = []
+for trip_time in sorted(trip_times, reverse=True):
+    subgraph = nx.ego_graph(G_proj, uni, radius=trip_time, distance="time")
+    isochrone_polys.append(
+        Polygon(
+            [Point(x, y) for x, y in subgraph.nodes(data="y")],
+            [list(subgraph.edges())],
+        )
+    )
+
+print(isochrone_polys)
+
+# %%
+trip_times = [3, 6, 9, 15]  # in minutes
+travel_speed = 4  # walking speed in km/hour
+
+center_node = uni
+
+#add an edge attribute for time in minutes required to traverse each edge
+meters_per_minute = travel_speed * 1000 / 60  # km per hour to m per minute
+for orig,dest, p, data in G_proj.edges(data=True, keys=True):
+    data["time"] = data["length"] / meters_per_minute
+
+isochrone_polys = []
+for trip_time in sorted(trip_times, reverse=True):
+    subgraph = nx.ego_graph(G_proj, center_node, radius=trip_time, distance="time")
+    node_points = [Point((data["x"], data["y"])) for node, data in subgraph.nodes(data=True)]
+    bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
+    isochrone_polys.append(bounding_poly)
+
+# to geojson 
+isochrones_geojson = ox.geo_utils.geojson_from_polygons(isochrone_polys)
+
+crs_proj = ox.graph_to_gdfs(G_proj)[0].crs
+
+return isochrones.to_json()
+
+# %%

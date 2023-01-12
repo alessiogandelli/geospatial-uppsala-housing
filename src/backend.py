@@ -5,6 +5,9 @@ import geopandas as gpd
 from db import Database
 from flask import request
 import osmnx  as ox
+import networkx as nx
+from shapely.geometry import Point, Polygon
+
 
 app = Flask(__name__)
 
@@ -48,6 +51,37 @@ def score():
     print( 'length:', round(sum(edge_lengths)))
 
     return {'distance_uni': 77}
+
+@app.route('/heatmap')
+def heatmap():
+    trip_times = [3, 6, 9, 15]  # in minutes
+    travel_speed = 4  # walking speed in km/hour
+
+    center_node =  ox.distance.nearest_nodes(G, Y=59.839815, X=17.646617)
+
+    G_proj = ox.project_graph(G)
+
+    #add an edge attribute for time in minutes required to traverse each edge
+    meters_per_minute = travel_speed * 1000 / 60  # km per hour to m per minute
+    for orig,dest, p, data in G_proj.edges(data=True, keys=True):
+        data["time"] = data["length"] / meters_per_minute
+
+    isochrone_polys = []
+    for trip_time in sorted(trip_times, reverse=True):
+        subgraph = nx.ego_graph(G_proj, center_node, radius=trip_time, distance="time")
+        node_points = [Point((data["x"], data["y"])) for node, data in subgraph.nodes(data=True)]
+        bounding_poly = gpd.GeoSeries(node_points).unary_union.convex_hull
+        isochrone_polys.append(bounding_poly)
+
+    # to geojson 
+    data = {'trip_time': sorted(trip_times, reverse=True), 'geometry': isochrone_polys}
+    crs_proj = ox.graph_to_gdfs(G_proj)[0].crs
+    
+    isochrones = gpd.GeoDataFrame(data,crs=crs_proj)
+
+    return isochrones.to_json()
+
+
 
 
 @app.route('/')

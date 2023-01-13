@@ -17,6 +17,9 @@ bus_routes = db.get_bus_routes()
 bus_stops = db.get_bus_stops()
 markets = db.get_supermarkets()
 
+bus_routes = bus_routes.set_index('ref')
+
+
 G = ox.load_graphml("/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/street_network.graphml")
 print('street nextword loaded', G)
 
@@ -41,8 +44,10 @@ def score():
     response = {}
 
     home = Point([lon, lat])
-    closest_idx = bus_stops.to_crs("EPSG:4326").distance(home).sort_values().index[0]
+    closest_idx = bus_stops.distance(home).sort_values().index[0]
     closest = bus_stops.iloc[closest_idx]
+
+    distance = get_distance(closest[1], home)
 
 
     place = geocoder.osm([lat, lon], method='reverse')
@@ -54,11 +59,30 @@ def score():
     response['bus_closest_name'] = closest[0]
     response['bus_closest_lat'] = closest.geometry.xy[1][0]
     response['bus_closest_lon'] = closest.geometry.xy[0][0]
+    response['home_lat'] = lat
+    response['home_lon'] = lon
+    response['bus_stop_distance'] = distance
 
 
 
 
     return response
+
+
+def get_distance(start, end):
+    global G
+    G = ox.add_edge_speeds(G)
+    G = ox.add_edge_travel_times(G)
+
+    start_node = ox.distance.nearest_nodes(G, Y=start.y, X=start.x)
+    end_node = ox.distance.nearest_nodes(G, Y=end.y, X=end.x)
+
+    route = nx.shortest_path(G, start_node, end_node, weight='travel_time')
+    
+    edge_lengths = ox.utils_graph.get_route_edge_attributes(G, route, 'length')
+    distance = sum(edge_lengths)
+
+    return distance
 
 @app.route('/heatmap')
 def heatmap():
@@ -99,4 +123,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(port = 8000, debug = True)
+    app.run(port = 8000)

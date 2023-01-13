@@ -20,7 +20,6 @@ stops = db.get_bus_stops()
 supermarkets = db.get_supermarkets()
 
 
-
 save_path = '/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsalaGeoJSON/'
 routes.to_file(save_path + 'routes.geojson', driver='GeoJSON')
 stops.to_file(save_path + 'stops.geojson', driver='GeoJSON')
@@ -133,9 +132,6 @@ for _, row in supermarkets.iterrows():
     supermarkets_group.add_child(folium.Circle(location=latlng, popup=row['name'], radius = 1, color = 'red', fill = True, fill_color = 'green'))
 
 
-
-marker_cluster = ClickForMarker()
-marker_cluster.add_to(m)
 
 
 bus_group.add_to(m)
@@ -250,3 +246,25 @@ crs_proj = ox.graph_to_gdfs(G_proj)[0].crs
 return isochrones.to_json()
 
 # %%
+
+#change crs 
+stops = stops.to_crs("EPSG:3310")
+
+home = Point([16.9853305, 59.7872818])
+# geodf of home point
+home = gpd.GeoDataFrame({'geometry': home}, index=[0], crs='EPSG:4326').to_crs('EPSG:3310')
+
+closest_idx = stops.distance(home['geometry'][0]).sort_values().index[0]
+closest = stops.iloc[closest_idx]
+    # %%
+
+import openrouteservice
+import dotenv 
+dotenv.load_dotenv()
+
+coords = ((8.34234,48.23424),(8.34423,48.26424))
+
+client = openrouteservice.Client(key=os.environ['routing_token']) # Specify your personal API key
+routes = client.directions(coords)
+
+print(routes)

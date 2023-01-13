@@ -38,17 +38,9 @@ def score():
     lat = request.args.get('lat')
     lon = request.args.get('lon')
     print(lat,lon)
-    print(G)
     # G = ox.speed.add_edge_speeds(G)
     # G = ox.speed.add_edge_travel_times(G)
 
-    #
-    orig = ox.distance.nearest_nodes(G, Y=lon, X=lat)
-    uni = ox.distance.nearest_nodes(G, Y=59.839815, X=17.646617)
-
-    route = ox.shortest_path(G, orig, dest, weight="travel_time")
-    edge_lengths = ox.utils_graph.get_route_edge_attributes(G, route, "length")
-    print( 'length:', round(sum(edge_lengths)))
 
     return {'distance_uni': 77}
 
@@ -76,7 +68,7 @@ def heatmap():
     # to geojson 
     data = {'trip_time': sorted(trip_times, reverse=True), 'geometry': isochrone_polys}
     crs_proj = ox.graph_to_gdfs(G_proj)[0].crs
-    
+
     isochrones = gpd.GeoDataFrame(data,crs=crs_proj)
 
     return isochrones.to_json()

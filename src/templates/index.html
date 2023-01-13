@@ -14,7 +14,28 @@
   </head>
   <body>
     <!-- Create a div element to hold the map -->
-    <div id="map" style="width: 1300px; height: 1000px"></div>
+    <div style="display: flex;">
+    <div id="map" style="width: 75%; height: 1000px"></div>
+    <div id="info" style="width: 25%; height: 1000px">
+
+        <div id="data"> 
+          <h1> Uppsala housing </h1>
+          <p> address: </p>
+          <h2> Bus distance </h2>
+              <p id="bus-closest">closest bus stop : </p>
+              <p id="bus-lines">lines: </p>
+              <p id="bus-uni">home-uni time: </p>
+              <p id="bus-center">home-center time: </p>
+              
+          <h2> Bike/walk distance</h2>
+              <p id = "bike-uni">home-uni time: </p>
+              <p id = "bike-home">home-center time: </p>
+              <p id= "walk-supermarket">home-supermarket time: </p>
+        </div>
+
+    
+    </div>
+    </div>
     <script src="{{url_for('static', filename='map2.js')}}"></script>
   </body>
 </html>

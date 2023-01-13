@@ -22,31 +22,31 @@ uni_marker = L.marker(university_coords).addTo(map)
 
 
 
-var geocoder = L.Control.Geocoder.nominatim();
 
 
-var control = L.Control.geocoder({
-    query: 'Uppsala',
-    placeholder: 'Search here...',
-    geocoder: geocoder
-}).addTo(map);
+var geocoder = L.Control.geocoder({ defaultMarkGeocode: false, query: 'Uppsala' })
+    .on('markgeocode', function (e) {
+        coord = e.geocode.center
+        console.log(coord)
 
-
-
-// var geocoder = L.Control.geocoder({ defaultMarkGeocode: false})
-//     .on('markgeocode', function (e) {
-//         coord = e.geocode.center
-
-
-//         var url = `http://127.0.0.1:8000/score?lat=${coord.lat}&lon=${coord.lng}&uni_lat=${coord.lat}`
+        var url = `http://127.0.0.1:8000/score?lat=${coord.lat}&lon=${coord.lng}`
 
 
 
-//         jQuery.getJSON(url, score)
+        jQuery.getJSON(url, score)
+
+        let busClosest = document.getElementById('bus-closest')
+        let busLines = document.getElementById('bus-lines')
+        let busUni = document.getElementById('bus-uni')
+        let walkSupermarket = document.getElementById('walk-supermarket')
+        let busHome = document.getElementById('bus-home')
+        
 
 
-//     })
-//     .addTo(map);
+
+
+    })
+    .addTo(map);
 
 /* 2 */
 // fill that layer with data from a geojson file
@@ -139,7 +139,6 @@ function score(data) {
     console.log(data)
 
 
-    console.log(node_home)
 
 }
 

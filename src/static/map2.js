@@ -133,13 +133,19 @@ function addSupermarket(feature, layer) {
 
 function score(data) {
     console.log(data)
-    
+
     let busClosest = document.getElementById('bus-closest')
     let busLines = document.getElementById('bus-lines')
     let busUni = document.getElementById('bus-uni')
     let walkSupermarket = document.getElementById('walk-supermarket')
     let busHome = document.getElementById('bus-home')
+    let address = document.getElementById('address')
 
+    busClosest.innerHTML = busClosest.innerHTML + data.bus_closest_name
+    address.innerHTML = address.innerHTML + data.address
+
+    // add marker to closest bus stop 
+    L.marker([data.bus_closest_lat, data.bus_closest_lon]).addTo(map)
 
 }
 

@@ -43,7 +43,6 @@ def score():
     home = Point([lon, lat])
     closest_idx = bus_stops.to_crs("EPSG:4326").distance(home).sort_values().index[0]
     closest = bus_stops.iloc[closest_idx]
-    closest_point = closest.geometry
 
 
     place = geocoder.osm([lat, lon], method='reverse')
@@ -52,7 +51,11 @@ def score():
     
     
     response['address'] = place.address
-    response['bus-closest'] = closest[0]
+    response['bus_closest_name'] = closest[0]
+    response['bus_closest_lat'] = closest.geometry.xy[1][0]
+    response['bus_closest_lon'] = closest.geometry.xy[0][0]
+
+
 
 
     return response

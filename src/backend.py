@@ -7,6 +7,7 @@ from flask import request
 import osmnx  as ox
 import networkx as nx
 from shapely.geometry import Point, Polygon
+import geocoder
 
 
 app = Flask(__name__)
@@ -35,14 +36,26 @@ def supermarkets():
 
 @app.route('/score')
 def score():
-    lat = request.args.get('lat')
-    lon = request.args.get('lon')
-    print(lat,lon)
-    # G = ox.speed.add_edge_speeds(G)
-    # G = ox.speed.add_edge_travel_times(G)
+    lat = float(request.args.get('lat'))
+    lon = float(request.args.get('lon'))
+    response = {}
+
+    home = Point([lon, lat])
+    closest_idx = bus_stops.to_crs("EPSG:4326").distance(home).sort_values().index[0]
+    closest = bus_stops.iloc[closest_idx]
+    closest_point = closest.geometry
 
 
-    return {'distance_uni': 77}
+    place = geocoder.osm([lat, lon], method='reverse')
+
+
+    
+    
+    response['address'] = place.address
+    response['bus-closest'] = closest[0]
+
+
+    return response
 
 @app.route('/heatmap')
 def heatmap():

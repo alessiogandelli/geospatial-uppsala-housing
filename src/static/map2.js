@@ -35,11 +35,7 @@ var geocoder = L.Control.geocoder({ defaultMarkGeocode: false, query: 'Uppsala' 
 
         jQuery.getJSON(url, score)
 
-        let busClosest = document.getElementById('bus-closest')
-        let busLines = document.getElementById('bus-lines')
-        let busUni = document.getElementById('bus-uni')
-        let walkSupermarket = document.getElementById('walk-supermarket')
-        let busHome = document.getElementById('bus-home')
+
         
 
 
@@ -137,7 +133,12 @@ function addSupermarket(feature, layer) {
 
 function score(data) {
     console.log(data)
-
+    
+    let busClosest = document.getElementById('bus-closest')
+    let busLines = document.getElementById('bus-lines')
+    let busUni = document.getElementById('bus-uni')
+    let walkSupermarket = document.getElementById('walk-supermarket')
+    let busHome = document.getElementById('bus-home')
 
 
 }

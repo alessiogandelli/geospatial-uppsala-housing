@@ -20,6 +20,7 @@ stops = db.get_bus_stops()
 supermarkets = db.get_supermarkets()
 
 
+
 save_path = '/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsalaGeoJSON/'
 routes.to_file(save_path + 'routes.geojson', driver='GeoJSON')
 stops.to_file(save_path + 'stops.geojson', driver='GeoJSON')

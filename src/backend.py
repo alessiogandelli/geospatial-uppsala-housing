@@ -20,11 +20,19 @@ markets = db.get_supermarkets()
 centrum =  Point([17.6387, 59.8586])
 uni = Point([ 17.646617, 59.839815])
 
+centrum = gpd.GeoDataFrame({'geometry': centrum}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+uni = gpd.GeoDataFrame({'geometry': uni}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+
+
 bus_routes = bus_routes.set_index('ref')
 
 # prjoject to meters 
 # bus_stops = bus_stops.to_crs(epsg=3152)
 # bus_routes = bus_routes.to_crs(epsg=3152)
+
+#prjoject to meters 
+bus_stops = bus_stops.to_crs(epsg=4326)
+bus_routes = bus_routes.to_crs(epsg=4326)
 
 # for each bus stop get distance from 4 taken from bus_routes
 bus_stops['distance4'] = bus_stops.apply(lambda row: row.geometry.distance( bus_routes.loc[4]['geometry']), axis=1)
@@ -58,16 +66,26 @@ def supermarkets():
 @app.route('/score')
 def score():
     global bus_stops
+    response = {}
     lat = float(request.args.get('lat'))
     lon = float(request.args.get('lon'))
-    response = {}
-    home = Point([lon, lat])
-    closest_idx = bus_stops.distance(home).sort_values().index[0]
-
-    closest = bus_stops.loc[closest_idx]
     
-    distance = get_distance(closest[1], home)
-    bus_lines = get_bus_lines(closest[1])
+    home = Point([lon, lat])
+    home = gpd.GeoDataFrame({'geometry': home}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+
+
+    closest_stop_idx = bus_stops.to_crs(epsg = 3152).distance(home).sort_values().index[0]
+    closest_stop = bus_stops.loc[closest_stop_idx]
+
+    distance_stop = get_distance(closest_stop[1], home)
+
+    closest_supermarket_idx = markets.to_crs(epsg = 3152).distance(home).sort_values().index[0]
+    closest_supermarket = markets.loc[closest_supermarket_idx]
+    distance_supermarket = get_distance(closest_supermarket[1], home)
+
+
+
+    bus_lines = get_bus_lines(closest_stop[1])
 
     home_uni = get_distance(home, uni)
     home_center = get_distance(home, centrum)
@@ -81,16 +99,17 @@ def score():
     
     
     response['address'] = place.address
-    response['bus_closest_name'] = closest[0]
-    response['bus_closest_lat'] = closest.geometry.xy[1][0]
-    response['bus_closest_lon'] = closest.geometry.xy[0][0]
     response['home_lat'] = lat
     response['home_lon'] = lon
-    response['bus_stop_distance'] = round(distance)
+
+    response['bus_closest_name'] = closest_stop[0]
+    response['bus_closest_lat'] = closest_stop.geometry.xy[1][0]
+    response['bus_closest_lon'] = closest_stop.geometry.xy[0][0]
+    response['bus_stop_distance'] = round(distance_stop)
+
     response['home_uni'] = round(home_uni)
     response['home_center'] = round(home_center)
-
-
+    response['home_supermarket'] = round(distance_supermarket)
 
 
     return response

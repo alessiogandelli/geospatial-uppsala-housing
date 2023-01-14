@@ -78,3 +78,4 @@ bus routes and stops on the folium map from postgres
 - saved to a graphml file for working later without needing to request it again and again, graphml is the best according to [here](https://github.com/gboeing/osmnx-examples/blob/cc2308ce7deb30fda4a24e8f8eec7906bbc631e3/notebooks/05-save-load-networks.ipynb)
 
 
+

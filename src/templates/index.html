@@ -11,34 +11,75 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 
+    <style>
+      #map {
+        background-color: #f5f5f5;
+        border: 1px solid #ccc;
+      }
+
+      #info {
+          background-color: #f5f5f5;
+          border: 1px solid #ccc;
+          padding: 20px;
+      }
+
+      #data {
+          font-family: Arial, sans-serif;
+          font-size: 14px;
+          line-height: 1.5;
+      }
+
+      #data h1 {
+          font-size: 28px;
+          font-weight: bold;
+          margin-top: 20px;
+      }
+
+      #data p {
+          margin: 10px 0;
+      }
+
+      #data #address {
+          font-weight: bold;
+      }
+    </style>
+
   </head>
   <body>
-    <!-- Create a div element to hold the map -->
-    <div style="display: flex;">
-    <div id="map" style="width: 75%; height: 1000px"></div>
-    <div id="info" style="width: 25%; height: 1000px">
+      <div style="display: flex;">
+          <div id="map" style="width: 75%; height: 1000px"></div>
+          <div id="info" style="width: 25%; height: 1000px">
+              <div id="data"> 
+                  <h1> Uppsala housing </h1>
+                  <p id="address"> address: </p>
+                  <p id="home-uni">home-uni time: </p>
+                  <p id="home-center">home-center time: </p>
+                  <p id="home-supermarket">home-supermarket time: </p>
+  
+                  <h2> Bus distance </h2>
+                  <p id="bus-closest">closest bus stop 4 or 12 : </p>
+                  <p id="bus-distance">distance to closest bus stop: </p>
+  
+                  <h2> Bike/walk distance</h2>
+                  <p id="bike-uni">home-uni time: </p>
+                  <p id="bike-center">home-center time: </p>
+                  <p id="bike-supermarket">home-supermarket time: </p>
 
-        <div id="data"> 
-          <h1> Uppsala housing </h1>
-          <p id="address"> address: </p>
-          <p id="home-uni">home-uni time: </p>
-          <p id="home-center">home-center time: </p>
-          <p id="home-supermarket">home-supermarket time: </p>
-
-          <h2> Bus distance </h2>
-              <p id="bus-closest">closest bus stop 4 or 12 : </p>
-              <p id="bus-distance">distance to closest bus stop: </p>
-              
-              
-          <h2> Bike/walk distance</h2>
-              <p id = "bike-uni">home-uni time: </p>
-              <p id = "bike-home">home-center time: </p>
-              <p id= "walk-supermarket">home-supermarket time: </p>
-        </div>
-
-    
-    </div>
-    </div>
-    <script src="{{url_for('static', filename='map2.js')}}"></script>
+                  <div id="slider-container">
+                    <label for="speed-slider">Speed:</label>
+                    <input type="range" id="speed-slider" min="0" max="30" value="15" oninput="showValue(this.value)">
+                    <span id="slider-value">15</span>
+                    <br>
+                    <button onclick="setSpeed('bike')">Bike</button>
+                    <button onclick="setSpeed('walk')">Walk</button>
+                </div>
+                
+                
+                
+              </div>
+          </div>
+      </div>
+      <script src="{{url_for('static', filename='map2.js')}}"></script>
   </body>
+  
 </html>

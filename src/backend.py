@@ -20,8 +20,8 @@ markets = db.get_supermarkets()
 centrum =  Point([17.6387, 59.8586])
 uni = Point([ 17.646617, 59.839815])
 
-centrum = gpd.GeoDataFrame({'geometry': centrum}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
-uni = gpd.GeoDataFrame({'geometry': uni}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+#centrum = gpd.GeoDataFrame({'geometry': centrum}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+#uni = gpd.GeoDataFrame({'geometry': uni}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
 
 
 bus_routes = bus_routes.set_index('ref')
@@ -71,18 +71,17 @@ def score():
     lon = float(request.args.get('lon'))
     
     home = Point([lon, lat])
-    home = gpd.GeoDataFrame({'geometry': home}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
+    #home = gpd.GeoDataFrame({'geometry': home}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
 
 
-    closest_stop_idx = bus_stops.to_crs(epsg = 3152).distance(home).sort_values().index[0]
+    closest_stop_idx = bus_stops.distance(home).sort_values().index[0]
     closest_stop = bus_stops.loc[closest_stop_idx]
 
     distance_stop = get_distance(closest_stop[1], home)
 
-    closest_supermarket_idx = markets.to_crs(epsg = 3152).distance(home).sort_values().index[0]
+    closest_supermarket_idx = markets.distance(home).sort_values().index[0]
     closest_supermarket = markets.loc[closest_supermarket_idx]
     distance_supermarket = get_distance(closest_supermarket[1], home)
-
 
 
     bus_lines = get_bus_lines(closest_stop[1])
@@ -119,6 +118,9 @@ def get_distance(start, end):
     global G
     G = ox.add_edge_speeds(G)
     G = ox.add_edge_travel_times(G)
+
+    #start = gpd.GeoDataFrame({'geometry': start}, index=[0], crs="EPSG:3153").to_crs(epsg=4326).geometry[0]
+    #end = gpd.GeoDataFrame({'geometry': end}, index=[0], crs="EPSG:3152").to_crs(epsg=4326).geometry[0]
 
     start_node = ox.distance.nearest_nodes(G, Y=start.y, X=start.x)
     end_node = ox.distance.nearest_nodes(G, Y=end.y, X=end.x)

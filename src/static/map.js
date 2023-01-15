@@ -1,87 +1,85 @@
 
-path = '/Users/alessiogandelli/dev/uni/geospatial-uppsala-housing/data/uppsalaGeoJSON/'
-let busRoutes;
-let stopsCircles;
-let supermarketCircles;
+async function init () {
 
-fetch('http://127.0.0.1:8000/routes')
-    .then(response => response.json())
-    .then(routes => {
-        // add the bus routes layer
-        busRoutes = L.geoJSON(routes).addTo(map);
-    });
+    var map = L.map('map').setView([59.8586, 17.6389], 12);
 
 
-// import the GeoJSON file for bus stop
+    streets = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);// create an operational layer that is empty for now
 
-fetch('http://127.0.0.1:8000/stops')
-  .then(response => response.json())
-  .then(stops => {
-    L.geoJSON(stops, {
-      pointToLayer: function(feature, latlng) {
-        return L.circle(latlng, {
-          radius: 5,  // radius in meters
-          color: 'green',
-          fillColor: '#f03',
-          fillOpacity: 0.5
-        });
-      },
-      onEachFeature: function(feature, layer) {
-        // add the name of the supermarket as a popup
-        layer.bindPopup(feature.properties.name);
-      }
-    }).addTo(map);
-  });
+    let busLayer = L.layerGroup().addTo(map)
+    let supermarketLayer = L.layerGroup().addTo(map)
+    let heatmapLayer = L.layerGroup().addTo(map)
 
-console.log(stopsCircles);
+    let university_coords = [59.839815, 17.646617]
 
-//import the GeoJSON file for supermarkets
-// fetch('http://127.0.0.1:8000/supermarkets')
-//     .then(response => response.json())
-//     .then(supermarkets => {
-//         // create an empty layer group for the supermarkets
-//         supermarketCircles = L.layerGroup().addTo(map);
+    let uni_marker = L.marker(university_coords).addTo(map)
 
-//         // loop through each feature in the GeoJSON object
-//         supermarkets.features.forEach(feature => {
-//             // get the coordinates of the feature
-//             var coords = feature.geometry.coordinates;
-//             // create a new circle at the coordinates
-//             var circle = L.circle(coords, {
-//                 radius: 100,  // radius in meters
-//                 color: 'red',
-//                 fillColor: '#f03',
-//                 fillOpacity: 0.5
-//             }).addTo(supermarketCircles);
-//             // add the name of the supermarket as a popup
-//             circle.bindPopup(feature.properties.name);
-//         });
-//     });
+    let stops = await fetch('http://127.0.0.1:8000/stops')
+    let routes = await fetch('http://127.0.0.1:8000/routes')
+    let supermarkets = await fetch('http://127.0.0.1:8000/supermarkets')
 
-var map = L.map('map').setView([59.8586, 17.6389], 12);
+    L.geoJSON(routes, { onEachFeature: addBus })
+    L.geoJSON(stops, { onEachFeature: addBus })
+    L.geoJSON(supermarkets, { onEachFeature: addSupermarket })
+    
 
-// add the OpenStreetMap tiles
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
+    var geocoder = L.Control.geocoder({ defaultMarkGeocode: false, query: 'Uppsala' })
+    .on('markgeocode', async function (e) {
+        coord = e.geocode.center
+        console.log(coord)
 
-// add the Lab location marker
-var labLocation = L.marker([59.8586, 17.6389]).addTo(map);
-labLocation.bindPopup("Ångströmlaboratoriet").openPopup();
+        let url = `http://127.0.0.1:8000/score?lat=${coord.lat}&lon=${coord.lng}`
 
-// create a layer control and add it to the map
-var layerControl = L.control.layers({}, {
-    "Bus Routes": busRoutes
-    //"Bus Stops": stopsCircles,
-  //  "Supermarkets": supermarketCircles
-}).addTo(map);
+        jQuery.getJSON(url, score)
+
+        let score = await fetch(url)
+
+
+    })
+    .addTo(map);
+
+
+
+    /* 4 */
+    // These options will appear in the control box that users click to show and hide layers
+    let basemapControl = {
+      "My Basemap": streets, // an option to select a basemap (makes more sense if you have multiple basemaps)
+    }
+    let layerControl = {
+      "Bus": busLayer, // an option to show or hide the layer you created from geojson
+      "Supermarket": supermarketLayer,
+      "Heatmap": heatmapLayer
+    }
+
+    L.control.layers(basemapControl, layerControl).addTo(map)
+}
 
 
 
 
 
 
+function addBus(feature, layer) {
+    
+  layer.bindPopup(feature.properties.ref);
+  busLayer.addLayer(layer)
+  // some other code can go here, like adding a popup with layer.bindPopup("Hello")
+}
 
 
+
+function addSupermarket(feature, layer) {
+  layer.bindPopup(feature.properties.name);
+  supermarketLayer.addLayer(layer)
+  // some other code can go here, like adding a popup with layer.bindPopup("Hello")
+}
+
+
+
+
+
+init()
 

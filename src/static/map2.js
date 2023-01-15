@@ -10,6 +10,7 @@ let bikeCenter = document.getElementById('bike-center')
 let bikeSupermarket = document.getElementById('bike-supermarket')
 
 function showValue(value) {
+    
     document.getElementById("slider-value").innerHTML = value;
 
     time_uni =  ((data.home_uni/1000)/ value) * 60
@@ -18,9 +19,9 @@ function showValue(value) {
 
     console.log(time_uni)
 
-    bikeUni.innerHTML = 'time from home to university: ' + time_uni+ 'min'
-    bikeCenter.innerHTML = 'time from home to city center: ' + time_center + 'min'
-    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + time_supermarket + 'min'
+    bikeUni.innerHTML = 'time from home to university: ' + Math.round(time_uni)+ 'min'
+    bikeCenter.innerHTML = 'time from home to city center: ' + Math.round(time_center) + 'min'
+    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + Math.round(time_supermarket) + 'min'
 }
 
 var speedSlider = document.getElementById("speed-slider");
@@ -69,8 +70,6 @@ var geocoder = L.Control.geocoder({ defaultMarkGeocode: false, query: 'Uppsala' 
         console.log(coord)
 
         var url = `http://127.0.0.1:8000/score?lat=${coord.lat}&lon=${coord.lng}`
-
-
 
         jQuery.getJSON(url, score)
 
@@ -152,8 +151,7 @@ jQuery.getJSON('http://127.0.0.1:8000/supermarkets', function (supermarket) {
 // This function is run for every feature found in the geojson file. It adds the feature to the empty layer we created above
 function addBus(feature, layer) {
     
-
-
+    
     layer.bindPopup(feature.properties.ref);
     busLayer.addLayer(layer)
     // some other code can go here, like adding a popup with layer.bindPopup("Hello")
@@ -201,9 +199,9 @@ function score(response) {
     homeCenter.innerHTML = 'Distance from home to city center: ' + data.home_center + 'm'
     homeSupermarket.innerHTML = 'Distance from home to supermarket: ' + data.home_supermarket + 'm'
 
-    bikeUni.innerHTML = 'time from home to university: ' + time_uni+ 'min'
-    bikeCenter.innerHTML = 'time from home to city center: ' + time_center + 'min'
-    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + time_supermarket + 'min'
+    bikeUni.innerHTML = 'time from home to university: ' + Math.round(time_uni)+ 'min'
+    bikeCenter.innerHTML = 'time from home to city center: ' + Math.round(time_center) + 'min'
+    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + Math.round(time_supermarket) + 'min'
     // add marker to closest bus stop 
     L.marker([data.bus_closest_lat, data.bus_closest_lon]).addTo(map)
     L.marker([data.home_lat, data.home_lon]).addTo(map)

@@ -1,7 +1,26 @@
 
 
+let time_uni = 0
+let time_center = 0
+let time_supermarket = 0
+let data = {}
+
+let bikeUni = document.getElementById('bike-uni')
+let bikeCenter = document.getElementById('bike-center')
+let bikeSupermarket = document.getElementById('bike-supermarket')
+
 function showValue(value) {
     document.getElementById("slider-value").innerHTML = value;
+
+    time_uni =  ((data.home_uni/1000)/ value) * 60
+    time_center = ((data.home_center/1000)/ value) * 60
+    time_supermarket = ((data.home_supermarket/1000)/ value) * 60
+
+    console.log(time_uni)
+
+    bikeUni.innerHTML = 'time from home to university: ' + time_uni+ 'min'
+    bikeCenter.innerHTML = 'time from home to city center: ' + time_center + 'min'
+    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + time_supermarket + 'min'
 }
 
 var speedSlider = document.getElementById("speed-slider");
@@ -151,8 +170,13 @@ function addSupermarket(feature, layer) {
 
 
 
-function score(data) {
-    console.log(data)
+function score(response) {
+    console.log(response)
+    data = response 
+
+    time_uni =  ((data.home_uni/1000)/ speed) * 60
+    time_center = ((data.home_center/1000)/ speed) * 60
+    time_supermarket = ((data.home_supermarket/1000)/ speed) * 60
 
     let busClosest = document.getElementById('bus-closest')
     let busDistance = document.getElementById('bus-distance')
@@ -169,7 +193,7 @@ function score(data) {
     let busHome = document.getElementById('bus-home')
     let address = document.getElementById('address')
 
-    address.innerHTML = 'Address:' + data.addres
+    address.innerHTML = 'Address:' + data.address
     busClosest.innerHTML = 'Closest bus stop: ' + data.bus_closest_name
     busDistance.innerHTML = 'Distance fron bus top: ' + data.bus_stop_distance + 'm'
     
@@ -177,9 +201,9 @@ function score(data) {
     homeCenter.innerHTML = 'Distance from home to city center: ' + data.home_center + 'm'
     homeSupermarket.innerHTML = 'Distance from home to supermarket: ' + data.home_supermarket + 'm'
 
-    bikeUni.innerHTML = 'time from home to university: ' + ((data.home_uni/1000)/ speed) * 60+ 'min'
-    bikeCenter.innerHTML = 'time from home to city center: ' + ((data.home_center/1000)/ speed) * 60 + 'min'
-    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + ((data.home_supermarket/1000)/ speed) *60 + 'min'
+    bikeUni.innerHTML = 'time from home to university: ' + time_uni+ 'min'
+    bikeCenter.innerHTML = 'time from home to city center: ' + time_center + 'min'
+    bikeSupermarket.innerHTML = 'time from home to supermarket: ' + time_supermarket + 'min'
     // add marker to closest bus stop 
     L.marker([data.bus_closest_lat, data.bus_closest_lon]).addTo(map)
     L.marker([data.home_lat, data.home_lon]).addTo(map)

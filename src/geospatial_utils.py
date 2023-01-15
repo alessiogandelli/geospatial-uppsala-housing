@@ -19,8 +19,8 @@ def get_score(home, bus_stops, markets, uni, centrum, G):
 
 
     # compute distances 
-    distance_supermarket = get_distance(closest_supermarket[1], home, G)
-    distance_stop        = get_distance(closest_stop[1], home, G)
+    home_supermarket = get_distance(home, closest_supermarket[1], G)
+    home_bus        = get_distance(home,closest_stop[1], G)
     home_uni             = get_distance(home, uni, G)
     home_center          = get_distance(home, centrum, G)
 
@@ -36,11 +36,11 @@ def get_score(home, bus_stops, markets, uni, centrum, G):
     response['bus_closest_name'] = closest_stop[0]
     response['bus_closest_lat'] = closest_stop.geometry.y
     response['bus_closest_lon'] = closest_stop.geometry.x
-    response['bus_stop_distance'] = round(distance_stop)
 
     response['home_uni'] = round(home_uni)
     response['home_center'] = round(home_center)
-    response['home_supermarket'] = round(distance_supermarket)
+    response['home_supermarket'] = round(home_supermarket)
+    response['home_bus'] = round(home_bus)
 
     return response
 

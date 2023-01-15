@@ -56,7 +56,7 @@ def score():
     
     # create point from lat and lon
     home = Point([lon, lat])
-    response = geo.get_score(home, bus_stops, markets, centrum, uni, G)
+    response = geo.get_score(home, bus_stops, markets, uni, centrum, G)
 
     return response
 

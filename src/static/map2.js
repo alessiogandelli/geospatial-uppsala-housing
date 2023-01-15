@@ -3,11 +3,13 @@
 let time_uni = 0
 let time_center = 0
 let time_supermarket = 0
+let time_stop = 0
 let data = {}
 
 let bikeUni = document.getElementById('bike-uni')
 let bikeCenter = document.getElementById('bike-center')
 let bikeSupermarket = document.getElementById('bike-supermarket')
+let bikeStop = document.getElementById('bike-stop')
 
 function showValue(value) {
     
@@ -16,12 +18,15 @@ function showValue(value) {
     time_uni =  ((data.home_uni/1000)/ value) * 60
     time_center = ((data.home_center/1000)/ value) * 60
     time_supermarket = ((data.home_supermarket/1000)/ value) * 60
+    time_stop = ((data.home_bus/1000)/ value) * 60
 
     console.log(time_uni)
 
     bikeUni.innerHTML = 'time from home to university: ' + Math.round(time_uni)+ 'min'
     bikeCenter.innerHTML = 'time from home to city center: ' + Math.round(time_center) + 'min'
     bikeSupermarket.innerHTML = 'time from home to supermarket: ' + Math.round(time_supermarket) + 'min'
+    bikeStop.innerHTML = 'time from home to bus stop: ' + Math.round(time_stop) + 'min'
+
 }
 
 var speedSlider = document.getElementById("speed-slider");
@@ -151,7 +156,7 @@ jQuery.getJSON('http://127.0.0.1:8000/supermarkets', function (supermarket) {
 // This function is run for every feature found in the geojson file. It adds the feature to the empty layer we created above
 function addBus(feature, layer) {
     
-    
+
     layer.bindPopup(feature.properties.ref);
     busLayer.addLayer(layer)
     // some other code can go here, like adding a popup with layer.bindPopup("Hello")
@@ -175,6 +180,7 @@ function score(response) {
     time_uni =  ((data.home_uni/1000)/ speed) * 60
     time_center = ((data.home_center/1000)/ speed) * 60
     time_supermarket = ((data.home_supermarket/1000)/ speed) * 60
+    time_stop = ((data.home_bus/1000)/ speed) * 60
 
     let busClosest = document.getElementById('bus-closest')
     let busDistance = document.getElementById('bus-distance')
@@ -186,6 +192,7 @@ function score(response) {
     let bikeUni = document.getElementById('bike-uni')
     let bikeCenter = document.getElementById('bike-center')
     let bikeSupermarket = document.getElementById('bike-supermarket')
+    let bikeStop = document.getElementById('bike-stop')
 
     let walkSupermarket = document.getElementById('walk-supermarket')
     let busHome = document.getElementById('bus-home')
@@ -193,7 +200,7 @@ function score(response) {
 
     address.innerHTML = 'Address:' + data.address
     busClosest.innerHTML = 'Closest bus stop: ' + data.bus_closest_name
-    busDistance.innerHTML = 'Distance fron bus top: ' + data.bus_stop_distance + 'm'
+    busDistance.innerHTML = 'Distance fron bus top: ' + data.home_bus + 'm'
     
     homeUni.innerHTML = 'Distance from home to university: ' + data.home_uni + 'm'
     homeCenter.innerHTML = 'Distance from home to city center: ' + data.home_center + 'm'
@@ -202,6 +209,8 @@ function score(response) {
     bikeUni.innerHTML = 'time from home to university: ' + Math.round(time_uni)+ 'min'
     bikeCenter.innerHTML = 'time from home to city center: ' + Math.round(time_center) + 'min'
     bikeSupermarket.innerHTML = 'time from home to supermarket: ' + Math.round(time_supermarket) + 'min'
+    bikeStop.innerHTML = 'time from home to bus stop: ' + Math.round(time_stop) + 'min'
+    
     // add marker to closest bus stop 
     L.marker([data.bus_closest_lat, data.bus_closest_lon]).addTo(map)
     L.marker([data.home_lat, data.home_lon]).addTo(map)

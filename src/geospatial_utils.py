@@ -88,7 +88,6 @@ def get_bus(bus_stops, bus_routes):
     bus_stops = bus_stops.loc[(bus_stops['distance4'] < 0.0005) | (bus_stops['distance12'] < 0.0005)]
     bus_routes = bus_routes.loc[[4, 12]]
 
-    print(bus_routes)
 
     return bus_stops, bus_routes
 
@@ -97,7 +96,7 @@ def get_closest_point(point, gdf):
     print('getting closest point to ')
     point_proj = gpd.GeoDataFrame({'geometry': point}, index=[0], crs="EPSG:4326").to_crs(epsg=3152).geometry[0]
 
-        # get the closest bus stop get the closest bus stop
+    # get the closest bus stop get the closest bus stop
     closest_idx = gdf.to_crs(epsg = 3152).distance(point_proj).sort_values().index[0]
     closest = gdf.loc[closest_idx] 
 

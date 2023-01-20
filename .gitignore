@@ -132,4 +132,5 @@ data/
 .DS_Store
 src/cache/
 
-chache/
+
+cache/

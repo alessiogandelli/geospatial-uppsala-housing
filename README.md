@@ -28,4 +28,4 @@ geopandas, shapely, geocoder, osmnx, networkx, folium, mapclassify, pysal
 
 
 ## Analysis 
-All the analysis can be found inside the notebook [analysis.ipynb](uppsala.ipynb)
+All the analysis can be found inside the notebook [analysis.ipynb]([uppsala.ipynb](https://github.com/alessiogandelli/geospatial-uppsala-housing/blob/main/src/analysis.ipynb))
